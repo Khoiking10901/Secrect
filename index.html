@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Chúc mừng 8/3</title>
+
+<style>
+
+html,body{
+margin:0;
+height:100%;
+scroll-behavior:smooth;
+overflow-y:scroll;
+font-family:Arial;
+scroll-snap-type:y mandatory;
+}
+
+.section{
+height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+position:relative;
+scroll-snap-align:start;
+}
+
+/* nền sáng */
+
+#welcome{
+background:linear-gradient(135deg,#ff7eb3,#ffb6e6,#ffd6f5);
+}
+
+/* chữ */
+
+h1{
+font-size:60px;
+color:white;
+text-shadow:0 0 20px #ff4da6;
+animation:fadeIn 1s ease;
+}
+
+.flower{
+position:fixed;
+top:-10px;
+font-size:25px;
+animation:fall linear forwards;
+}
+
+@keyframes fall{
+0%{transform:translateY(0) rotate(0deg);}
+100%{transform:translateY(110vh) rotate(360deg);}
+}
+
+.scroll-text{
+position:absolute;
+top:15px;
+font-size:14px;
+color:white;
+opacity:0.9;
+}
+
+@keyframes fadeIn{
+from{opacity:0;transform:translateY(-30px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+/* game */
+
+.game{
+background:linear-gradient(135deg,#ffe6f2,#ffd1ec,#fff0f7);
+color:#333;
+font-size:22px;
+}
+
+/* grid */
+
+.grid{
+display:grid;
+grid-template-columns:repeat(3,100px);
+gap:10px;
+margin-top:20px;
+}
+
+.cell{
+width:100px;
+height:100px;
+background:white;
+border-radius:10px;
+display:flex;
+justify-content:center;
+align-items:center;
+font-size:30px;
+cursor:pointer;
+box-shadow:0 5px 10px rgba(0,0,0,0.1);
+}
+
+/* phong bì */
+
+.envelope{
+display:none;
+margin-top:30px;
+font-size:80px;
+cursor:pointer;
+animation:pop 0.5s;
+}
+
+@keyframes pop{
+from{transform:scale(0);}
+to{transform:scale(1);}
+}
+
+/* thư */
+
+.letter{
+display:none;
+margin-top:20px;
+background:white;
+padding:25px;
+border-radius:15px;
+max-width:350px;
+text-align:center;
+font-size:20px;
+box-shadow:0 0 20px pink;
+animation:openLetter 1s;
+}
+
+@keyframes openLetter{
+from{
+transform:scaleY(0);
+opacity:0;
+}
+to{
+transform:scaleY(1);
+opacity:1;
+}
+}
+
+/* pháo hoa */
+
+.firework{
+position:fixed;
+width:6px;
+height:6px;
+border-radius:50%;
+background:yellow;
+pointer-events:none;
+animation:explode 1s forwards;
+}
+
+@keyframes explode{
+
+0%{
+transform:translate(0,0) scale(1);
+opacity:1;
+}
+
+100%{
+transform:translate(var(--x),var(--y)) scale(0);
+opacity:0;
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="section" id="welcome">
+
+<div class="scroll-text">⬇ kéo xuống !</div>
+
+<h1>💐 Chúc Mừng Ngày 8/3 💐</h1>
+
+</div>
+
+<div class="section game">
+
+<div>🧩 Hãy tìm đủ 4 mảnh ghép</div>
+
+<div class="grid" id="grid"></div>
+
+<div class="envelope" id="envelope">💌</div>
+
+<div class="letter" id="letter">
+Chúc mẹ một ngày 8/3 thật vui vẻ! 🌸  
+Luôn hạnh phúc, xinh đẹp và gặp nhiều may mắn!
+</div>
+
+</div>
+
+<audio id="music">
+<source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<audio id="fireworkSFX" src="firework.mp3" preload="auto"></audio>
+
+<script>
+
+    function playFireworkSFX(){
+    const sfx = document.getElementById("fireworkSFX")
+
+    sfx.currentTime = 0
+    sfx.play()
+}
+
+/* hoa rơi */
+
+function createFlower(){
+
+let flower=document.createElement("div");
+flower.className="flower";
+flower.innerHTML="🌸";
+
+flower.style.left=Math.random()*100+"vw";
+flower.style.animationDuration=(3+Math.random()*5)+"s";
+
+document.body.appendChild(flower);
+
+setTimeout(()=>{
+flower.remove();
+},8000);
+
+}
+
+setInterval(createFlower,300);
+
+/* game */
+
+let grid=document.getElementById("grid")
+let envelope=document.getElementById("envelope")
+let letter=document.getElementById("letter")
+
+let pieces=0
+let hidden=[1,3,5,7]
+
+for(let i=0;i<9;i++){
+
+let cell=document.createElement("div")
+cell.className="cell"
+
+cell.onclick=function(){
+
+if(hidden.includes(i)){
+
+cell.innerHTML="🧩"
+pieces++
+
+hidden=hidden.filter(x=>x!=i)
+
+}
+
+else{
+
+cell.innerHTML="❌"
+
+}
+
+if(pieces==4){
+
+envelope.style.display="block"
+
+}
+
+}
+
+grid.appendChild(cell)
+
+}
+
+/* pháo hoa */
+
+function firework(x,y){
+
+    playFireworkSFX()
+
+for(let i=0;i<40;i++){
+
+let f=document.createElement("div")
+f.className="firework"
+
+let angle=Math.random()*Math.PI*2
+let distance=Math.random()*150
+
+let dx=Math.cos(angle)*distance+"px"
+let dy=Math.sin(angle)*distance+"px"
+
+f.style.left=x+"px"
+f.style.top=y+"px"
+
+f.style.setProperty("--x",dx)
+f.style.setProperty("--y",dy)
+
+document.body.appendChild(f)
+
+setTimeout(()=>f.remove(),1000)
+
+
+}
+
+}
+
+/* mở thư */
+
+envelope.onclick=function(){
+
+envelope.style.display="none"
+letter.style.display="block"
+
+/* phát nhạc */
+
+document.getElementById("music").play()
+
+/* pháo hoa */
+
+for(let i=0;i<5;i++){
+
+setTimeout(()=>{
+firework(
+Math.random()*window.innerWidth,
+Math.random()*window.innerHeight/2
+)
+},i*300)
+
+}
+
+}
+
+</script>
+
+</body>
+</html>
